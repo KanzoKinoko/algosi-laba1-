@@ -129,37 +129,58 @@ bool Zadanie2(char stroka[]){
 
 
 // Задание 3. Строка хранится в файле.
+
 bool Zadanie3(const char* imya_fayla1, const char* imya_fayla2)
 {
-    std::ifstream vhod(imya_fayla1);
+    // Открываем первый файл для чтения.
+    FILE* vhod = fopen(imya_fayla1, "r");
 
-    if (!vhod.is_open())
+    // Проверяем, удалось ли открыть входной файл.
+    if (vhod == nullptr)
     {
         return false;
     }
 
+    // Создаём один массив для хранения строки из файла.
     char stroka[1000];
 
-    vhod.getline(stroka, 1000);
-    vhod.close();
-
-    int dlina = 0;
-    while (stroka[dlina] != '\0')
+    // проверка удалось ли считать строку,и при этом строка сохраняется в массив,т.к. сначала вызывается fgets(stroka, 1000, vhod)
+    if (fgets(stroka, 1000, vhod) == nullptr)
     {
-        dlina++;
+        fclose(vhod);
+        return false;
     }
 
+    // Закрываем входной файл.
+    fclose(vhod);
+
+    // Вычисляем длину строки с помощью strlen.
+    int dlina = static_cast<int>(strlen(stroka));
+
+    // Убираем символ переноса строки, если он был считан.
+    if (dlina > 0 && stroka[dlina - 1] == '\n')
+    {
+        stroka[--dlina] = '\0';
+    }
+
+    // Обрабатываем строку непосредственно в этом же массиве.
     bool rezultat = Obrabotka_stroki_bez_strlen(stroka, dlina);
 
-    std::ofstream vyhod(imya_fayla2);
+    // Открываем второй файл для записи.
+    FILE* vyhod = fopen(imya_fayla2, "w");
 
-    if (!vyhod.is_open())
+    // Проверяем, удалось ли открыть выходной файл.
+    if (vyhod == nullptr)
     {
         return false;
     }
 
-    vyhod << stroka;
-    vyhod.close();
+    // Записываем обработанную строку в выходной файл.
+    fputs(stroka, vyhod);
 
+    // Закрываем выходной файл.
+    fclose(vyhod);
+
+    // Возвращаем результат обработки строки.
     return rezultat;
 }
