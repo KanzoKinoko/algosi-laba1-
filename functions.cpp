@@ -132,16 +132,15 @@ bool Zadanie2(char stroka[]){
 
 bool Zadanie3(const char* imya_fayla1, const char* imya_fayla2)
 {
-    // Открываем первый файл для чтения.
     FILE* vhod = fopen(imya_fayla1, "r");
 
-    // Проверяем, удалось ли открыть входной файл.
+
     if (vhod == nullptr)
     {
         return false;
     }
 
-    // Создаём один массив для хранения строки из файла.
+
     char stroka[1000];
 
     // проверка удалось ли считать строку,и при этом строка сохраняется в массив,т.к. сначала вызывается fgets(stroka, 1000, vhod)
@@ -151,36 +150,26 @@ bool Zadanie3(const char* imya_fayla1, const char* imya_fayla2)
         return false;
     }
 
-    // Закрываем входной файл.
     fclose(vhod);
-
-    // Вычисляем длину строки с помощью strlen.
     int dlina = static_cast<int>(strlen(stroka));
 
-    // Убираем символ переноса строки, если он был считан.
+
     if (dlina > 0 && stroka[dlina - 1] == '\n')
     {
         stroka[--dlina] = '\0';
     }
 
-    // Обрабатываем строку непосредственно в этом же массиве.
     bool rezultat = Obrabotka_stroki_bez_strlen(stroka, dlina);
-
-    // Открываем второй файл для записи.
     FILE* vyhod = fopen(imya_fayla2, "w");
 
-    // Проверяем, удалось ли открыть выходной файл.
+
     if (vyhod == nullptr)
     {
         return false;
     }
 
-    // Записываем обработанную строку в выходной файл.
+
     fputs(stroka, vyhod);
-
-    // Закрываем выходной файл.
     fclose(vyhod);
-
-    // Возвращаем результат обработки строки.
     return rezultat;
 }
