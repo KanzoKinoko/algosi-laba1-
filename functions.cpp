@@ -1,9 +1,14 @@
-#include <fstream>
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include "functions.h"
 
+using namespace std;
 
-static bool Obrabotka_stroki_bez_strlen(char stroka[], int dlina){
+
+
+bool Obrabotka_stroki_bez_strlen(char stroka[], int dlina){
     int kolichestvo = 0;
     int poziciya = 0;
 
@@ -107,69 +112,224 @@ static bool Obrabotka_stroki_bez_strlen(char stroka[], int dlina){
 
     return true;
 }
+char* Vvod_malloc() {
+
+    int dlina = 0; 
+    char* stroka = (char*)malloc(2);
+
+    if (stroka == nullptr) {
+
+        return nullptr;
+    }
+
+    stroka[0] = '\0';
+
+    int simvol;
+
+    while ((simvol = getchar()) != '\n' && simvol != EOF) {
+
+        char* novaya_stroka = (char*)malloc(dlina + 2);
+
+        if (novaya_stroka == nullptr) {
+            free(stroka);
+            return nullptr;
+        }
 
 
-// Задание 1. Строка как массив символов.
-bool Zadanie1(char stroka[]){
-    int dlina = 0;
+        for (int i = 0; i < dlina; i++) {
+            novaya_stroka[i] = stroka[i];
+        }
 
-    while (stroka[dlina] != '\0')
-    {
+        novaya_stroka[dlina] = simvol;
+        novaya_stroka[dlina + 1] = '\0';
+        free(stroka);
+        stroka = novaya_stroka;
         dlina++;
     }
 
-    return Obrabotka_stroki_bez_strlen(stroka, dlina);
+    return stroka;
+}
+char* Vvod_calloc_realloc() {
+
+    int dlina = 0;
+    char* stroka = (char*)calloc(1, sizeof(char));
+
+    if (stroka == nullptr) {
+        return nullptr;
+    }
+
+    int simvol;
+
+    while ((simvol = getchar()) != '\n' && simvol != EOF) {
+
+        char* novaya_stroka = (char*)realloc(stroka, (dlina + 2) * sizeof(char));
+        if (novaya_stroka == nullptr) {
+            free(stroka);
+            return nullptr;
+        }
+
+        stroka = novaya_stroka;
+        stroka[dlina] = simvol;
+        dlina++;
+        stroka[dlina] = '\0';
+    }
+
+    return stroka;
+}
+char* Chtenie_fayla_calloc_realloc(FILE* fayl) {
+
+    int dlina = 0;
+    char* stroka = (char*)calloc(1, sizeof(char));
+
+    if (stroka == nullptr) {
+        return nullptr;
+    }
+
+    int simvol;
+
+    while ((simvol = fgetc(fayl)) != '\n' && simvol != EOF) {
+
+        char* novaya_stroka = (char*)realloc(stroka, (dlina + 2) * sizeof(char));
+        if (novaya_stroka == nullptr) {
+            free(stroka);
+            return nullptr;
+        }
+
+        stroka = novaya_stroka;
+        stroka[dlina] = simvol;
+        dlina++;
+        stroka[dlina] = '\0';
+    }
+
+    return stroka;
 }
 
-// Задание 2. Строка как строка в стиле языка Си (строка, завершающаяся символом '\0').
-bool Zadanie2(char stroka[]){
-    int dlina = static_cast<int>(strlen(stroka));
-    return Obrabotka_stroki_bez_strlen(stroka, dlina);
-}
+//задания с лр
+bool Zadanie1() {
 
 
-// Задание 3. Строка хранится в файле.
+    cout << "\nВведите строку:\n";
+    char* stroka = Vvod_malloc();
 
-bool Zadanie3(const char* imya_fayla1, const char* imya_fayla2)
-{
-    FILE* vhod = fopen(imya_fayla1, "r");
+    if (stroka == nullptr) {
 
-
-    if (vhod == nullptr)
-    {
         return false;
     }
 
-
-    char stroka[1000];
-
-    // проверка удалось ли считать строку,и при этом строка сохраняется в массив,т.к. сначала вызывается fgets(stroka, 1000, vhod)
-    if (fgets(stroka, 1000, vhod) == nullptr)
-    {
-        fclose(vhod);
-        return false;
-    }
-
-    fclose(vhod);
-    int dlina = static_cast<int>(strlen(stroka));
-
-
-    if (dlina > 0 && stroka[dlina - 1] == '\n')
-    {
-        stroka[--dlina] = '\0';
-    }
-
+    int dlina = (strlen(stroka));
     bool rezultat = Obrabotka_stroki_bez_strlen(stroka, dlina);
+
+    cout << "\nРезультат:\n";
+    cout << stroka << '\n';
+    if (!rezultat) {
+
+        // Если групп меньше двух, сообщаем об этом пользователю.
+        cout << "Количество групп меньше двух. Строка не изменена.\n";
+    }
+
+    free(stroka);
+    return true;
+}
+bool Zadanie2() {
+    cout << "\nВведите строку:\n";
+    char* stroka = Vvod_calloc_realloc();
+
+    if (stroka == nullptr) {
+
+        return false;
+    }
+
+    int dlina =(strlen(stroka));
+    bool rezultat = Obrabotka_stroki_bez_strlen(stroka, dlina);
+
+    cout << "\nРезультат:\n";
+    cout << stroka << '\n';
+    if (!rezultat) {
+
+        cout << "Количество групп меньше двух. Строка не изменена.\n";
+    }
+
+
+    free(stroka);
+    return true;
+}
+
+bool Zadanie3(const char* imya_fayla1, const char* imya_fayla2) {
+    //запись строки в файл
+    cout << "\nВведите строку:\n";
+    char* stroka = Vvod_calloc_realloc();
+
+    if (stroka == nullptr) {
+
+        return false;
+    }
+
+    FILE* vhod = fopen(imya_fayla1, "w");
+
+    if (vhod == nullptr) {
+        free(stroka);
+        return false;
+    }
+
+
+    fputs(stroka, vhod);
+    fclose(vhod);
+    free(stroka);
+
+
+    //чтение строки из файла
+
+
+    vhod = fopen(imya_fayla1, "r");
+
+
+    if (vhod == nullptr) {
+
+
+        return false;
+    }
+
+
+    stroka = Chtenie_fayla_calloc_realloc(vhod);
+    fclose(vhod);
+
+
+    if (stroka == nullptr) {
+
+        return false;
+    }
+
+    // обработочка нашей многостродальной строки
+
+
+    int dlina = static_cast<int>(strlen(stroka));
+    bool rezultat = Obrabotka_stroki_bez_strlen(stroka, dlina);
+
+
+    //запись в файл
+
     FILE* vyhod = fopen(imya_fayla2, "w");
 
+    if (vyhod == nullptr) {
 
-    if (vyhod == nullptr)
-    {
+
+        free(stroka);
+
+
         return false;
     }
-
 
     fputs(stroka, vyhod);
     fclose(vyhod);
-    return rezultat;
+
+
+    cout << "\nРезультат записан в файл "<< imya_fayla2 << '\n';
+    if (!rezultat) {
+
+        cout << "Количество групп меньше двух. Строка не изменена.\n";
+    }
+
+
+    free(stroka);
+    return true;
 }

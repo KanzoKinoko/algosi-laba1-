@@ -1,105 +1,48 @@
 #include <iostream>
-#include <cstring>
+#include <limits>
+#include <clocale>
 #include "functions.h"
 
 using namespace std;
 
-int main()
-{
+int main() {
     setlocale(LC_ALL, "Russian");
 
-    // Задание 1. Символьный массив
-    char stroka1[1000];
+    int vibor;
 
-    cout << "Задание 1. Введите строку:\n";
-    cin.getline(stroka1, 1000);
+    cout << "ЛАБОРАТОРНАЯ РАБОТА №2\n\n";
 
-    int dlina = static_cast<int>(strlen(stroka1));
+    cout << "1. Ввод строки через malloc и free\n";
+    cout << "2. Ввод строки через calloc, realloc и free\n";
+    cout << "3. Работа с файлами\n\n";
 
-    if (Zadanie1(stroka1))
-    {
-        cout << "Результат: " << stroka1 << '\n';
-    }
-    else
-    {
-    cout << "Найдено меньше двух групп. Строка не изменена.\n";
-    }
+    cout << "Выберите задание: ";
+    cin >> vibor;
 
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-
-
-    // Задание 2. C-строка
-    char stroka2[1000];
-    int i = 0;
-    int c; // getchar() возвращает int, поэтому используем int
-
-    cout << "\nЗадание 2. Введите строку (для завершения введите \\0):\n";
-
-    while (i < 998)
-    {
-        c = getchar(); // Считываем один символ
-
-        // Если встретили конец ввода, завершаем цикл
-        if (c == EOF)
-        {
-            break;
+    switch (vibor) {
+    case 1:
+        if (!Zadanie1()) {
+            cout << "Ошибка выделения памяти.\n";
         }
+        break;
 
-        // Проверяем, является ли символ обратным слешем
-        if (c == '\\')
-        {
-            int next = getchar(); // Считываем следующий символ
-
-            // Если следующий символ — цифра 0, завершаем ввод
-            if (next == '0')
-            {
-                break;
-            }
-
-            // Иначе сохраняем оба символа
-            stroka2[i++] = static_cast<char>(c);
-
-            if (next == EOF)
-            {
-                break;
-            }
-
-            stroka2[i++] = static_cast<char>(next);
+    case 2:
+        if (!Zadanie2()) {
+            cout << "Ошибка выделения памяти.\n";
         }
+        break;
 
-        else
-        {
-            // Сохраняем обычный символ
-            stroka2[i++] = static_cast<char>(c);
+    case 3:
+        if (!Zadanie3("input.txt", "output.txt")) {
+            cout << "Ошибка при работе с памятью или файлами.\n";
         }
-    }
+        break;
 
-    // Завершаем C-строку нулевым символом
-    stroka2[i] = '\0';
-
-    if (Zadanie2(stroka2))
-    {
-        cout << "Результат: " << stroka2 << '\n';
-    }
-    else
-    {
-        cout << "Найдено меньше двух групп. Строка не изменена.\n";
-    }
-
-
-    // Задание 3. Обработка строки в файле
-    char imya_fayla[256];
-
-    cout << "\nЗадание 3.\n";
-  
-
-    if (Zadanie3("input.txt", "output.txt"))
-    {
-        cout << "Результат обработки файла input.txt записан в output.txt.\n";
-    }
-    else
-    {
-        cout << "Ошибка обработки файлов или найдено меньше двух групп.\n";
+    default:
+        cout << "Неверный номер задания.\n";
+        break;
     }
 
     return 0;
